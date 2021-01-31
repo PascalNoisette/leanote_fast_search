@@ -37,7 +37,7 @@ server {
 
 
   indexer:
-     image: netpascal0123/leanote_fast_search
+     image: netpascal0123/leanote_fast_search:release-1.0
      command: serve
      environment:
      - ES_HOST=https://admin:admin@elasticsearch
