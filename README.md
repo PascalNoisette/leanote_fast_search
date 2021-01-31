@@ -34,12 +34,6 @@ server {
     - 9200:9200
     environment:
     - discovery.type=single-node
-    - "http.host=0.0.0.0"
-    - "http.port=9200"
-    - "http.cors.allow-origin=*"
-    - "http.cors.enabled=true"
-    - "http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization"
-    - "http.cors.allow-credentials=true"
 
 
   indexer:
