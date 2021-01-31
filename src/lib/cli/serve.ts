@@ -9,7 +9,8 @@ import 'reflect-metadata';
 
 @injectable()
 export class Serve implements Cli {
-  public plugins: Registrable[];
+  public controllers: Controller[];
+  public handlers: Handler[];
   public logger: LoggerInstance;
 
   constructor(
@@ -17,7 +18,8 @@ export class Serve implements Cli {
     @multiInject('Handler') handlers: Handler[],
     @inject('Logger') logger: LoggerInstance
   ) {
-    this.plugins = controllers.concat(handlers);
+    this.controllers = controllers;
+    this.handlers = handlers;
     this.logger = logger;
   }
 
@@ -32,7 +34,8 @@ export class Serve implements Cli {
   action(...args: any[]): void | Promise<void> {
     const app: express.Application = express();
 
-    this.plugins.forEach((plugin: Registrable) => plugin.register(app));
+    this.handlers.forEach((plugin: Registrable) => plugin.register(app));
+    this.controllers.forEach((plugin: Registrable) => plugin.register(app));
 
     const port = process.env.BACKEND_PORT || 3000;
     app.listen(port, () => {
