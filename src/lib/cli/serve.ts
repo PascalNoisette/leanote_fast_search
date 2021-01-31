@@ -1,13 +1,13 @@
-import container from '../inversify.config';
-import { Program } from '../interface/Program';
-import { Registrable } from '../interface/Registrable';
+import container from '../../inversify.config';
+import { Cli } from '../../interface/Cli';
+import { Registrable } from '../../interface/Registrable';
 import { LoggerInstance } from 'winston';
 import { injectable } from 'inversify';
 import express from 'express';
 import 'reflect-metadata';
 
 @injectable()
-export class Serve implements Program {
+export class Serve implements Cli {
   getCommand(): string {
     return 'serve';
   }

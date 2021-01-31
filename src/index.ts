@@ -1,15 +1,15 @@
-import { Program } from './interface/Program';
+import { Cli } from './interface/Cli';
 import { Command } from 'commander';
 import container from './inversify.config';
 
 const command = new Command();
 container
-  .getAll<Program>('Program')
-  .forEach((program: Program) =>
+  .getAll<Cli>('Cli')
+  .forEach((cli: Cli) =>
     command
-      .command(program.getCommand())
-      .description(program.getDescription())
-      .action(program.action)
+      .command(cli.getCommand())
+      .description(cli.getDescription())
+      .action(cli.action)
   );
 
 command.parse(process.argv);

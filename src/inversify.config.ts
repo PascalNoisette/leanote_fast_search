@@ -1,17 +1,17 @@
-import { SearchNote } from './controller/SearchNote';
-import { XformUrlEncoded } from './handler/XformUrlEncoded';
+import { SearchNote } from './lib/controller/SearchNote';
+import { XformUrlEncoded } from './lib/handler/XformUrlEncoded';
 import { Container } from 'inversify';
 import { Registrable } from './interface/Registrable';
-import { ConfiguredLogger } from './logger/ConfigurableLogger';
+import { ConfiguredLogger } from './lib/logger/ConfigurableLogger';
 import { LoggerInstance, LoggerOptions, transports } from 'winston';
-import { Program } from './interface/Program';
-import { Serve } from './command/serve';
+import { Cli } from './interface/Cli';
+import { Serve } from './lib/cli/serve';
 
 const container = new Container();
 container.bind<Registrable>('Registrable').to(SearchNote);
 container.bind<Registrable>('Registrable').to(XformUrlEncoded);
 
-container.bind<Program>('Program').to(Serve);
+container.bind<Cli>('Cli').to(Serve);
 
 container
   .bind<LoggerInstance>('Logger')

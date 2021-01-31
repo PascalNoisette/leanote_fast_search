@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import express from 'express';
 import 'reflect-metadata';
-import { Controller } from '../interface/Controller';
+import { Controller } from '../../interface/Controller';
 
 @injectable()
 export class SearchNote implements Controller {
