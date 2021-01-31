@@ -4,10 +4,14 @@ import { Container } from 'inversify';
 import { Registrable } from './interface/Registrable';
 import { ConfiguredLogger } from './logger/ConfigurableLogger';
 import { LoggerInstance, LoggerOptions, transports } from 'winston';
+import { Program } from './interface/Program';
+import { Serve } from './command/serve';
 
 const container = new Container();
 container.bind<Registrable>('Registrable').to(SearchNote);
 container.bind<Registrable>('Registrable').to(XformUrlEncoded);
+
+container.bind<Program>('Program').to(Serve);
 
 container
   .bind<LoggerInstance>('Logger')
