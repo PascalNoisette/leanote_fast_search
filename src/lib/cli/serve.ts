@@ -1,13 +1,26 @@
-import container from '../../inversify.config';
 import { Cli } from '../../interface/Cli';
 import { Registrable } from '../../interface/Registrable';
+import { Controller } from '../../interface/Controller';
+import { Handler } from '../../interface/Handler';
 import { LoggerInstance } from 'winston';
-import { injectable } from 'inversify';
+import { injectable, inject, multiInject } from 'inversify';
 import express from 'express';
 import 'reflect-metadata';
 
 @injectable()
 export class Serve implements Cli {
+  public plugins: Registrable[];
+  public logger: LoggerInstance;
+
+  constructor(
+    @multiInject('Controller') controllers: Controller[],
+    @multiInject('Handler') handlers: Handler[],
+    @inject('Logger') logger: LoggerInstance
+  ) {
+    this.plugins = controllers.concat(handlers);
+    this.logger = logger;
+  }
+
   getCommand(): string {
     return 'serve';
   }
@@ -19,15 +32,11 @@ export class Serve implements Cli {
   action(...args: any[]): void | Promise<void> {
     const app: express.Application = express();
 
-    container
-      .getAll<Registrable>('Registrable')
-      .forEach((plugin: Registrable) => plugin.register(app));
+    this.plugins.forEach((plugin: Registrable) => plugin.register(app));
 
     const port = process.env.BACKEND_PORT || 3000;
-    app.listen(port, function () {
-      container
-        .get<LoggerInstance>('Logger')
-        .info(`Example app listening on port ${port}`);
+    app.listen(port, () => {
+      this.logger.info(`Example app listening on port ${port}`);
     });
   }
 }
