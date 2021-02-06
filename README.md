@@ -54,13 +54,30 @@ docker-compose up -d
 
 ## Initial installation (destructive)
 
-Any index named "notes" will be dropped.
+Any index named "notes" and "attachs" will be dropped with a "attachment" pipeline.
 ```
+docker-compose exec elasticsearch bin/elasticsearch-plugin install --batch ingest-attachment
+docker-compose restart elasticsearch
 docker-compose run --rm indexer install
+docker-compose run --rm indexer install-ingest
 ```
 ## Reindex cronjob
 
 The first launch will index all note, and the followings will check the last known UpdatedTime in elasticsearch compared to the UpdatedTime of the last created or modified notes and send the one missing. 
 ```
 docker-compose run --rm indexer reindex
+docker-compose run --rm indexer attach
 ```
+
+## Options
+
+| Environnement variable | Default                              | Description                  |
+| ---------------------- |:------------------------------------:| ----------------------------:|
+| SUPPORTED_FORMAT       | 'pdf,doc,docx,xls,xlsx,epub,ods,odt' | Index only this content type |
+| NODE_ENV               |                                      | Can be production, faster    |
+| BACKEND_PORT           | 3000                                 | TCP port                     |
+| STORAGE_PATH           | '/leanote/data/'                     | Leanote storage directory    |
+| ES_HOST                | 'https://admin:admin@127.0.0.1'      | Index only this content type |
+| MONGO_HOST             | 'mongodb://127.0.0.1:27017/leanote'  | Index only this content type |
+
+

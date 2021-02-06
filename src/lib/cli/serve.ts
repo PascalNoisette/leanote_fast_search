@@ -29,8 +29,7 @@ export class Serve implements Cli {
   getDescription(): string {
     return 'Launch http service';
   }
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
-  /* eslint-disable  @typescript-eslint/no-unused-vars */
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
   action(...args: any[]): void | Promise<void> {
     const app: express.Application = express();
 

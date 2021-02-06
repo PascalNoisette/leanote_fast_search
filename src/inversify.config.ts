@@ -1,23 +1,15 @@
 import { Container } from 'inversify';
-import { LoggerOptions, transports } from 'winston';
 import { Autoloader } from 'autoloader-ts';
 import glob from 'glob';
 import path from 'path';
-import { Leanote } from './model/Leanote';
-import { Notes } from './interface/Notes';
 
 export const container = new Container();
 
-/* Preference */
-container.bind<LoggerOptions>('LoggerOptions').toConstantValue({
-  exitOnError: false,
-  transports: [new transports.Console()]
-});
-container.bind<Notes>('Notes').to(Leanote).inSingletonScope();
-
 /* Autoload */
+const libDir =
+  process.env.NODE_ENV !== 'production' ? './src/lib/*' : './build/lib/*';
 export const initialization = Promise.all(
-  glob.sync('./src/lib/*').map((dir) =>
+  glob.sync(libDir).map((dir) =>
     Autoloader.dynamicImport()
       .then((loader) => loader.fromDirectories(path.resolve(dir)))
       .then(async function (loader) {
@@ -27,7 +19,14 @@ export const initialization = Promise.all(
           const capitalized =
             path.basename(dir).charAt(0).toUpperCase() +
             path.basename(dir).slice(1);
-          container.bind(capitalized).to(await exported);
+          container
+            .bind(capitalized)
+            .to(await exported)
+            .inSingletonScope();
+          container
+            .bind((await exported).name)
+            .to(await exported)
+            .inSingletonScope();
         }
       })
   )

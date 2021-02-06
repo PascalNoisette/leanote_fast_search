@@ -11,14 +11,14 @@ export class Install implements Cli {
 
   constructor(
     @inject('Logger') logger: LoggerInstance,
-    @inject('Leanote') notes: Installable
+    @inject('Attachment') notes: Installable
   ) {
     this.notes = notes;
     this.logger = logger;
   }
 
   getCommand(): string {
-    return 'install';
+    return 'install-ingest';
   }
   getDescription(): string {
     return 'Create an empty optimized elasticsearch index for notes';

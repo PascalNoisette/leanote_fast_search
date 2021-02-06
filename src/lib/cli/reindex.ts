@@ -2,19 +2,17 @@ import { Cli } from '../../interface/Cli';
 import { LoggerInstance } from 'winston';
 import { injectable, inject } from 'inversify';
 import 'reflect-metadata';
-import { Notes } from '../../interface/Notes';
-import striptags from 'striptags';
-/* eslint-disable  @typescript-eslint/no-var-requires */
-const htmlentities = require('html-entities');
+import { IndexStream } from '../helper/IndexStream';
+import { Indexable } from '../../interface/Indexable';
 
 @injectable()
 export class Reindex implements Cli {
   public logger: LoggerInstance;
-  public notes: Notes;
+  public notes: Indexable;
 
   constructor(
     @inject('Logger') logger: LoggerInstance,
-    @inject('Notes') notes: Notes
+    @inject('Leanote') notes: Indexable
   ) {
     this.notes = notes;
     this.logger = logger;
@@ -26,51 +24,9 @@ export class Reindex implements Cli {
   getDescription(): string {
     return 'Index into elasticsearch notes from mongodb';
   }
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
-  /* eslint-disable  @typescript-eslint/no-unused-vars */
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
   action(...args: any[]): void | Promise<void> {
-    let counter = 0;
-    let total = 0;
-
-    this.notes.getPreviousIndexedData((previous) => {
-      const stream = this.notes.getAllNotesIterator(previous);
-
-      stream.on('data', (doc) => {
-        stream.pause();
-        counter++;
-
-        this.notes.findContentById(doc._id, function (err, enrich: any) {
-          if (!err && enrich) {
-            const striped = striptags(enrich.Content, ['a']);
-            doc.Content = htmlentities.decode(striped, { level: 'html5' });
-          } else {
-            console.log('No content for ' + doc._id);
-          }
-          doc.index(function onIndex(indexErr: boolean) {
-            counter--;
-            if (indexErr) {
-              console.log(indexErr);
-            } else {
-              total++;
-            }
-            stream.resume();
-          });
-        });
-      });
-
-      stream.on('close', () => {
-        const closeInterval = setInterval(() => {
-          if (counter === 0) {
-            clearInterval(closeInterval);
-            console.log('indexed ' + total + ' documents!');
-            this.notes.close();
-          }
-        }, 2000);
-      });
-
-      stream.on('error', (err) => {
-        console.log(err);
-      });
-    });
+    const stream = new IndexStream(this.notes);
+    this.notes.getPreviousIndexedData(stream.reindexFromPrevious.bind(stream));
   }
 }
