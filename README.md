@@ -1,6 +1,10 @@
 # leanote_fast_search
 Index Leanote into elasticsearch for performant searches
 
+<a href="https://github.com/PascalNoisette/leanote_fast_search/actions">
+  <img src="https://github.com/PascalNoisette/leanote_fast_search/workflows/CI/badge.svg" alt="CI Status">
+</a>
+
 ## Prerequisite
 
 - You installed and self-host Leanote https://github.com/jim3ma/docker-leanote
